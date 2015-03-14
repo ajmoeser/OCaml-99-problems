@@ -1,5 +1,11 @@
 (* Ocaml practice using the 99 problems from Ocaml.org *)
 
+(* lists for testing *)
+let intl = [1;2;3;4;5;6;7;8;9;10];;
+let single = [1];;
+let charl = ["a";"b";"c"];;
+let rle = [(3,"a");(1,"b");(2,"c")];;
+
 (* last element of a list *)
 let rec last (xs : 'a list) : 'a option =
 match xs with
@@ -75,7 +81,7 @@ let rec compress (xs : 'a list) : 'a list =
 
 
 (* pack consecutive duplicates into sublists *)
-let pack (lst : 'a list) : 'a list list =
+(*let pack (lst : 'a list) : 'a list list =
   let rec aux (xs : 'a list) (acc : 'a list) : 'a list list =
     match xs with
     | [] -> []
@@ -83,7 +89,7 @@ let pack (lst : 'a list) : 'a list list =
       else  aux (s::tl) (f::acc)
     | [f] -> [f::acc] in
   aux lst []
-;; (* NOT working *)
+;;   *)
 
 
 (* run-length encoding *)
@@ -99,14 +105,44 @@ let rec decode (ps : (int * 'a) list) : 'a list =
   | (n,x)::tl -> x::(decode ((n - 1,x)::tl)) 
 ;;
 
-let rle = [(3,"a");(1,"b");(2,"c")];;
-
 
 (* duplicate each element of list *)
 let rec duplicate (xs : 'a list) : 'a list =
   match xs with
   | [] -> []
   | hd::tl -> hd::(hd::(duplicate tl))
+;;
+
+(* make n duplicates of each element of list *)
+let replicate (xs : 'a list) (n : int) : 'a list =
+  let rec aux lst i acc =
+    match lst with
+    | [] -> acc
+    | hd::tl -> if i > 0 then aux lst (i - 1) (hd::acc)
+      else aux tl n acc in
+  List.rev (aux xs n [])
+;;
+
+
+(* drops every n'th element; indexed from 1 *)
+let drop_nth (xs : 'a list) (n : int) : 'a list =
+  let rec drop lst i acc =
+    match lst with 
+    | [] -> acc
+    | hd::tl -> if i = n then drop tl 1 acc
+      else drop tl (i + 1) (hd::acc) in
+  List.rev (drop xs 1 [])
+;;
+
+
+(* splits list into two parts; length of first part given by n *)
+let split (xs : 'a list) (n : int) : ('a list * 'a list) =
+  let rec aux lst i acc =
+    match lst with
+    | [] -> (List.rev acc, [])
+    | hd::tl as l -> if i > 0 then aux tl (i - 1) (hd::acc)
+      else (List.rev acc,l) in
+  aux xs n []
 ;;
 
 
