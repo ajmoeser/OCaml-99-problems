@@ -1,6 +1,7 @@
 (* Ocaml practice using the 99 problems from Ocaml.org *)
 
 (* lists for testing *)
+let e = [];;
 let intl = [1;2;3;4;5;6;7;8;9;10];;
 let single = [1];;
 let charl = ["a";"b";"c"];;
@@ -146,3 +147,8 @@ let split (xs : 'a list) (n : int) : ('a list * 'a list) =
 ;;
 
 
+(* extracts slice of lists, from i to k inclusive; indexed from 0 *)
+let rec slice (xs : 'a list) (i : int) (k : int) =
+  match xs with
+  | [] -> []
+  | hd::tl -> if ...
