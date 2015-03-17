@@ -4,7 +4,7 @@
 let e = [];;
 let intl = [1;2;3;4;5;6;7;8;9;10];;
 let single = [1];;
-let charl = ["a";"b";"c"];;
+let charl = ["a";"a";"b";"c";"c";"c";"c";"d"];;
 let rle = [(3,"a");(1,"b");(2,"c")];;
 
 (* last element of a list *)
@@ -82,21 +82,28 @@ let rec compress (xs : 'a list) : 'a list =
 
 
 (* pack consecutive duplicates into sublists *)
-(*let pack (lst : 'a list) : 'a list list =
-  let rec aux (xs : 'a list) (acc : 'a list) : 'a list list =
+let pack (lst : 'a list) : 'a list list =
+  let rec aux (xs : 'a list) (acc1 : 'a list) (acc2 : 'a list list) : 'a list list =
     match xs with
-    | [] -> []
-    | f::s::tl -> if f = s then aux (f::tl) (s::acc)
-      else  aux (s::tl) (f::acc)
-    | [f] -> [f::acc] in
-  aux lst []
-;;   *)
+    | [] -> acc2
+    | a::b::tl -> if a = b then aux (b::tl) (a::acc1) acc2
+      else aux (b::tl) [] ((a::acc1)::acc2)
+    | [a] -> (a::acc1)::acc2 in
+  List.rev (aux lst [] [])
+;;
 
 
 (* run-length encoding *)
-(*let encode (xs : 'a list) : (int * 'a) list =
-  let rec aux lst count =
-*)
+let encode (xs : 'a list) : (int * 'a) list =
+  let rec aux lst count acc =
+    match lst with
+    | [] -> []
+    | a::(b::_ as tl) -> 
+      if a = b then aux tl (count + 1) acc
+      else aux tl 0 ((count + 1,a)::acc)
+    | [a] -> (count + 1, a)::acc in
+  List.rev (aux xs 0 [])
+;;
 
 (* decode run-length encoding *)
 let rec decode (ps : (int * 'a) list) : 'a list =
@@ -148,7 +155,11 @@ let split (xs : 'a list) (n : int) : ('a list * 'a list) =
 
 
 (* extracts slice of lists, from i to k inclusive; indexed from 0 *)
-let rec slice (xs : 'a list) (i : int) (k : int) =
-  match xs with
-  | [] -> []
-  | hd::tl -> if ...
+let slice (xs : 'a list) (i : int) (k : int) =
+  let rec get_slice lst n acc =
+    match lst with
+    | [] -> acc
+    | hd::tl -> if n <= k then get_slice tl (n + 1) (hd::acc)
+                else acc in
+  List.rev (get_slice xs i [])
+;;
